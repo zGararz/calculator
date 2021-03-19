@@ -38,7 +38,7 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
             R.id.button_five,
             R.id.button_six,
             R.id.button_seven,
-            R.id.button_eght,
+            R.id.button_eight,
             R.id.button_nine,
             R.id.button_open_parentheses,
             R.id.button_close_parentheses
@@ -116,7 +116,7 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
         button_five.setOnClickListener(this)
         button_six.setOnClickListener(this)
         button_seven.setOnClickListener(this)
-        button_eght.setOnClickListener(this)
+        button_eight.setOnClickListener(this)
         button_nine.setOnClickListener(this)
         button_ac.setOnClickListener(this)
         button_back.setOnClickListener(this)
