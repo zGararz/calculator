@@ -1,6 +1,16 @@
 package com.example.mycalculator
 
-import android.util.Log
+const val ADD = "+"
+const val SUB = "-"
+const val MUL = "*"
+const val DIV = "/"
+const val NAN = "NaN"
+const val EQUAL = "="
+const val DOT = "."
+const val ZERO = "0"
+const val OPEN_PARENTHESES = "("
+const val CLOSE_PARENTHESES = ")"
+const val BLANK = ""
 
 class Infix() {
     private val stackE = Stack<String>()
@@ -8,44 +18,42 @@ class Infix() {
     fun getResult(expression: String): String {
         val postfix = toPostfix(expression)
 
-        if (postfix != null) {
-            for (i in postfix) {
-                when (i) {
-                    "+", "-", "*", "/" -> {
-                        if (calPostfix(i) != null) {
-                            stackE.push(postfix.toString())
-                        } else {
-                            return "NaN"
-                        }
-                    }
-                    else -> stackE.push(i)
+        postfix ?: return NAN
+        for (character in postfix) {
+            if (character in listOf<String>(ADD, SUB, MUL, DIV)) {
+                calPostfix(character).also {
+                    it ?: return NAN
+                    stackE.push(it.toString())
                 }
-            }
 
-            stackE.pop().toString().split(".").let {
-                if (it.size > 1) {
-                    if (it[1].equals("0")) it.get(0) else it[0] + "." + it[1]
-                } else {
-                    return it[0]
-                }
+            } else {
+                stackE.push(character)
             }
         }
 
-        return "NaN"
+        stackE.pop().toString().split(DOT).let {
+            if (it.size == 2) {
+                if (it[1].equals(ZERO)) return it.first() else return it.first() + DOT + it[1]
+            } else {
+                return it.first()
+            }
+        }
+
+        return NAN
     }
 
     fun toPostfix(expression: String): MutableList<String>? {
         val expression1 = splitExpression(expression)
         val s = ArrayList<String>()
-        Log.d("AAA", "split:${expression1.toString()}")
+
         return expression1.let {
             if (it != null) {
                 for (i in it) {
                     when (i) {
-                        "(" -> stackE.push("(")
-                        ")" -> s.add(popParenthesis())
-                        "*", "/" -> s.addAll(popPriority2(i))
-                        "+", "-" -> s.addAll(popPriority1(i))
+                        OPEN_PARENTHESES -> stackE.push(OPEN_PARENTHESES)
+                        CLOSE_PARENTHESES -> popParenthesis()?.let { s.add(it) }
+                        MUL, DIV -> s.addAll(popPriority2(i))
+                        ADD, SUB -> s.addAll(popPriority1(i))
                         else -> s.add(i)
                     }
                 }
@@ -64,10 +72,10 @@ class Infix() {
             val b = stackE.pop()?.toDouble()
             val a = stackE.pop()?.toDouble()
             when (o) {
-                "+" -> return (b?.let { a?.plus(it) })
-                "-" -> return (b?.let { a?.minus(it) })
-                "*" -> return (b?.let { a?.times(it) })
-                "/" -> return (b?.let { a?.div(it) })
+                ADD -> return (b?.let { a?.plus(it) })
+                SUB -> return (b?.let { a?.minus(it) })
+                MUL -> return (b?.let { a?.times(it) })
+                DIV -> return (b?.let { a?.div(it) })
             }
         } catch (e: NumberFormatException) {
             return null
@@ -80,27 +88,26 @@ class Infix() {
         val s = StringBuilder()
         var count = 0
         for (i in expression) {
-            when (i) {
-                '+', '-', '*', '/' -> {
-                    if (!s.toString().equals("")) list.add(s.toString())
+            when (i.toString()) {
+                ADD, SUB, MUL, DIV, OPEN_PARENTHESES, CLOSE_PARENTHESES -> {
+                    if (!s.toString().isBlank()) list.add(s.toString())
                     list.add(i.toString())
                     s.clear()
-                }
-                '(', ')' -> {
-                    if (!s.toString().equals("")) list.add(s.toString())
-                    list.add(i.toString())
-                    s.clear()
-                    count++
+
+                    when (i.toString()) {
+                        OPEN_PARENTHESES -> count++
+                        CLOSE_PARENTHESES -> count--
+                    }
                 }
                 else -> s.append(i)
             }
         }
 
-        if (s != null && !s.toString().equals("")) {
+        if (!s.toString().isNullOrBlank()) {
             list.add(s.toString())
         }
 
-        if (count % 2 == 0) return list else return null
+        if (count == 0) return list else return null
     }
 
 
@@ -108,7 +115,7 @@ class Infix() {
         val s = ArrayList<String>()
         for (i in (stackE.stack.size - 1) downTo 0) {
             when (stackE.stack[i]) {
-                "*", "/" -> s.add(stackE.pop(i).toString())
+                MUL, DIV -> s.add(stackE.pop(i).toString())
             }
         }
         stackE.push(o)
@@ -119,26 +126,29 @@ class Infix() {
         val s = ArrayList<String>()
         for (i in (stackE.stack.size - 1) downTo 0) {
             when (stackE.stack[i]) {
-                "*", "/", "+", "-" -> s.add(stackE.pop(i).toString())
+                MUL, DIV, ADD, SUB -> s.add(stackE.pop(i).toString())
             }
         }
         stackE.push(o)
         return s
     }
 
-    private fun popParenthesis(): String {
+    private fun popParenthesis(): String? {
         val s = StringBuilder()
         var c: String? = null
 
         c = stackE.pop()
         while (c != null) {
-            if (c != "(") {
+            if (c != OPEN_PARENTHESES) {
                 s.append(c)
                 c = stackE.pop()
             } else {
                 return s.toString()
             }
         }
-        return ""
+        return null
     }
 }
+
+private fun String.isOperator(): Boolean = this in listOf<String>(ADD, SUB, MUL, DIV)
+
