@@ -8,8 +8,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_calculator.*
 
-class
-FragmentCalculator : Fragment(), View.OnClickListener {
+class FragmentCalculator : Fragment(), View.OnClickListener {
     private var countDot = 0
     private var enableDot = true
 
