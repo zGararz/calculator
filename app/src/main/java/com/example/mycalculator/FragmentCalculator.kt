@@ -43,7 +43,7 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
             R.id.buttonAdd,
             R.id.buttonSub,
             R.id.buttonMul,
-            R.id.button_div -> buttonOperatorListener(v as Button)
+            R.id.buttonDiv -> buttonOperatorListener(v as Button)
             R.id.buttonAc -> buttonAcListener()
             R.id.buttonBack -> buttonBackListener()
             R.id.buttonEqual -> buttonEqualListener()
@@ -115,7 +115,7 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
         buttonAdd.setOnClickListener(this)
         buttonSub.setOnClickListener(this)
         buttonMul.setOnClickListener(this)
-        button_div.setOnClickListener(this)
+        buttonDiv.setOnClickListener(this)
         buttonEqual.setOnClickListener(this)
         buttonDot.setOnClickListener(this)
         buttonOpenParentheses.setOnClickListener(this)
