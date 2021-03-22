@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.frame_root, FragmentCalculator())
+            .add(R.id.frameRoot, FragmentCalculator())
             .commit()
     }
 }

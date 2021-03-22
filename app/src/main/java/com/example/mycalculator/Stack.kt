@@ -1,11 +1,7 @@
 package com.example.mycalculator
 
 class Stack<T> {
-    val stack: MutableList<T>
-
-    init {
-        stack = ArrayList<T>()
-    }
+    val stack = ArrayList<T>()
 
     fun push(e: T) = stack.add(0, e)
 
@@ -28,5 +24,4 @@ class Stack<T> {
             return null
         }
     }
-
 }

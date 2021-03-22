@@ -3,46 +3,35 @@ package com.example.mycalculator
 import android.util.Log
 
 class Infix() {
-    val stackE: Stack<String>
-
-    init {
-        stackE = Stack()
-    }
+    private val stackE = Stack<String>()
 
     fun getResult(expression: String): String {
         val postfix = toPostfix(expression)
-        Log.d("AAA", "postfix:${postfix.toString()}")
 
-        return postfix.let {
-            if (it != null) {
-                for (i in it) {
-                    Log.d("AAA", stackE.stack.toString())
-                    when (i) {
-                        "+", "-", "*", "/" -> {
-                            calPostfix(i).also {
-                                if (it != null) {
-                                    stackE.push(it.toString())
-                                } else {
-                                    return "NaN"
-                                }
-                            }
+        if (postfix != null) {
+            for (i in postfix) {
+                when (i) {
+                    "+", "-", "*", "/" -> {
+                        if (calPostfix(i) != null) {
+                            stackE.push(postfix.toString())
+                        } else {
+                            return "NaN"
                         }
-                        else -> stackE.push(i)
                     }
+                    else -> stackE.push(i)
                 }
+            }
 
-                stackE.pop().toString().split(".").let {
-                    if (it.size > 1) {
-                        if (it[1].equals("0")) it.get(0) else it[0] + "." + it[1]
-                    } else {
-                        it[0]
-                    }
+            stackE.pop().toString().split(".").let {
+                if (it.size > 1) {
+                    if (it[1].equals("0")) it.get(0) else it[0] + "." + it[1]
+                } else {
+                    return it[0]
                 }
-
-            } else {
-                "NaN"
             }
         }
+
+        return "NaN"
     }
 
     fun toPostfix(expression: String): MutableList<String>? {
@@ -153,5 +142,3 @@ class Infix() {
         return ""
     }
 }
-
-
