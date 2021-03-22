@@ -11,7 +11,6 @@ import kotlinx.android.synthetic.main.fragment_calculator.*
 class FragmentCalculator : Fragment(), View.OnClickListener {
     private var countDot = 0
     private var enableDot = true
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,11 +38,17 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
             R.id.buttonEight,
             R.id.buttonNine,
             R.id.buttonOpenParentheses,
-            R.id.buttonCloseParentheses -> buttonNumberListener(v as Button)
+            R.id.buttonCloseParentheses -> {
+                val button = (v as? Button) ?: return
+                buttonNumberListener(button)
+            }
             R.id.buttonAdd,
             R.id.buttonSub,
             R.id.buttonMul,
-            R.id.buttonDiv -> buttonOperatorListener(v as Button)
+            R.id.buttonDiv -> {
+                val button = (v as? Button) ?: return
+                buttonOperatorListener(button)
+            }
             R.id.buttonAc -> buttonAcListener()
             R.id.buttonBack -> buttonBackListener()
             R.id.buttonEqual -> buttonEqualListener()
@@ -52,7 +57,7 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
     }
 
     private fun buttonDotListener() {
-        if (countDot == 0 && enableDot && !textCal.text.equals("")) {
+        if (countDot == 0 && enableDot && !textCal.text.isBlank()) {
             textCal.text = textCal.text.toString() + buttonDot.text.toString()
             countDot = 1
             enableDot = false
@@ -60,14 +65,19 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
     }
 
     private fun buttonEqualListener() {
-        textTemp.text = textCal.text.toString() + "="
+        textTemp.text = textCal.text.toString() + EQUAL
         textCal.text = Infix().getResult(textCal.text.toString())
     }
 
     private fun buttonBackListener() {
         textCal.apply {
-            if (!text.equals("")) {
-                if (text.get(text.length - 1).toString().equals(buttonDot.text.toString())) {
+
+            if (!text.isBlank()) {
+                if (text.equals(NAN)) {
+                    text = BLANK
+                    return
+                }
+                if (text.takeLast(1) == buttonDot.text) {
                     countDot = 0
                     enableDot = true
                 }
@@ -77,8 +87,8 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
     }
 
     private fun buttonAcListener() {
-        textCal.text = ""
-        textTemp.text = ""
+        textCal.text = BLANK
+        textTemp.text = BLANK
     }
 
     private fun buttonNumberListener(button: Button) {
@@ -90,7 +100,7 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
     private fun buttonOperatorListener(button: Button) {
         textCal.text.toString().also {
             if (!it.equals("")
-                && it.get(it.length - 1) !in listOf<Char>('+', '-', '*', '/')
+                && it.get(it.length - 1) !in listOf<String>(ADD, SUB, MUL, DIV)
             ) {
                 textCal.text = it + button.text.toString()
             }
@@ -120,6 +130,5 @@ class FragmentCalculator : Fragment(), View.OnClickListener {
         buttonDot.setOnClickListener(this)
         buttonOpenParentheses.setOnClickListener(this)
         buttonCloseParentheses.setOnClickListener(this)
-
     }
 }
